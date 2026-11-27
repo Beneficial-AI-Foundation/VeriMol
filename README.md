@@ -23,7 +23,8 @@ example filter, based on one associated example rule.
 **Why.** One of the key studies that motivate this project is recounted in
 "The Dark Side", a book chapter on the dual-use implications of generative
 drug discovery ([Ekins, 2024](https://doi.org/10.1201/9781003399346-13); see
-also [Urbina et al., 2022](https://doi.org/10.1038/s42256-022-00465-9)): what
+also [Urbina et al., 2022](https://doi.org/10.1038/s42256-022-00465-9),
+[free full text](https://pmc.ncbi.nlm.nih.gov/articles/PMC9544280/)): what
 serves the AI-assisted search for drugs can be turned to harm. Invited in 2021 to
 present on the dual-use risks of AI, researchers in drug discovery showed
 that their own computational tools could propose tens of thousands of
