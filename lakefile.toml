@@ -1,0 +1,102 @@
+# Build description for Lake, Lean's build tool. Written by hand.
+# No [[require]] sections: this project has no dependencies (rule 2 of the
+# project; CLAIMS.md lists the nine rules that the comments here cite).
+
+name = "verimol"
+version = "0.1.0"
+
+# What a plain "lake build" builds: five libraries and the three executables.
+# The sixth library, Main, is built with Audit, which imports it.
+defaultTargets = ["VeriMol.Core", "VeriMol.Proofs", "VeriMol", "Audit", "TestData", "app", "answers", "tests"]
+
+# What "lake test" runs, after building everything it needs (see "tests" at
+# the end of this file).
+testDriver = "tests"
+
+# Options for every Lean file of the project.
+# autoImplicit = false: a name that was never introduced is an error. Without
+# this, a misspelt variable in a theorem statement silently becomes a new
+# "for all" variable and the theorem says something else than intended.
+[leanOptions]
+autoImplicit = false
+
+# ---------------------------------------------------------------- libraries
+
+# All the logic: pure, total functions. Root file: VeriMol/Core.lean, with
+# the files under VeriMol/Core/. Another project imports it as VeriMol.Core.
+# warningAsError = true: any warning in these files stops the build (rule 6).
+[[lean_lib]]
+name = "VeriMol.Core"
+leanOptions = { warningAsError = true }
+
+# Theorems about the logic. Root file: VeriMol/Proofs.lean, with the files
+# under VeriMol/Proofs/.
+# moreLeanArgs are used by "lake build" and "lake test", but not by the editor.
+# -DwarningAsError=true: any warning stops the build here as well (rule 6).
+# -Dwarn.sorry=false: except the warning about "sorry", because an open theorem
+# may contain "sorry" (rule 9). The audit reports every open theorem instead,
+# and the editor still marks every "sorry".
+[[lean_lib]]
+name = "VeriMol.Proofs"
+moreLeanArgs = ["-DwarningAsError=true", "-Dwarn.sorry=false"]
+
+# The logic with its theorems: VeriMol.lean, which imports the two libraries
+# above and holds nothing else. Another project imports it as VeriMol.
+# roots and globs: this library is that one file. Without the two lines Lake
+# would count every file under VeriMol/ as a part of it, and the files of the
+# two libraries above would be built with the options of this one.
+[[lean_lib]]
+name = "VeriMol"
+roots = []
+globs = ["VeriMol"]
+leanOptions = { warningAsError = true }
+
+# Checks the rules of the project that a machine can check. Root file: Audit.lean
+[[lean_lib]]
+name = "Audit"
+leanOptions = { warningAsError = true }
+
+# Main.lean a second time, as a library beside the executable "app" below.
+# Audit.lean imports Main, and Lake follows an import only into a library.
+# Without this entry Lake would not build Audit.lean again when Main.lean
+# changes, so the audit would not run on the changed file.
+[[lean_lib]]
+name = "Main"
+leanOptions = { warningAsError = true }
+
+# The expected results of the tests. Root file: TestData.lean
+# That file is written by reference/check_tests.py from the model (SPEC.md as
+# a Python program) and is never changed by hand. Tests.lean imports it.
+[[lean_lib]]
+name = "TestData"
+leanOptions = { warningAsError = true }
+
+# -------------------------------------------------------------- executables
+
+# The program itself: input and output only. Built to .lake/build/bin/app
+[[lean_exe]]
+name = "app"
+root = "Main"
+leanOptions = { warningAsError = true }
+
+# A second small program, for the checks only. Built to .lake/build/bin/answers
+# It gives what VeriMol.run gives for many lists of command-line arguments in
+# one start. It is not the program: "app" is. Answers.lean says why it exists,
+# how it is called and what it prints.
+[[lean_exe]]
+name = "answers"
+root = "Answers"
+leanOptions = { warningAsError = true }
+
+# The tests. Built to .lake/build/bin/tests
+# needs: what must be built before the tests run.
+#   "app": the tests also run the program itself.
+#   "answers": the tests hold the second program against the same expected
+#   answers as the program.
+#   "VeriMol" and "Audit": so that "lake test" alone builds everything and
+#   runs the audit. If the audit fails, the tests do not start.
+[[lean_exe]]
+name = "tests"
+root = "Tests"
+needs = ["app", "answers", "VeriMol", "Audit"]
+leanOptions = { warningAsError = true }

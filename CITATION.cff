@@ -1,0 +1,29 @@
+# How to cite this project. GitHub shows this file as "Cite this repository".
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "VeriMol: formally verified safety filters for AI-generated molecules, in Lean 4"
+abstract: >-
+  An early research prototype of a framework for safety filters for molecules,
+  with checks that are proven in Lean 4. A rule about a molecular graph is
+  stated as a short definition; a checker and a machine-checked proof that the
+  checker is right are written for it; and a filter hands a molecule on only
+  if its SMILES is read, the graph is sound and the rule holds. One filter
+  with one rule is built, on a reader and writer for SMILES with a proven
+  round trip. Claude Code, an AI coding assistant, wrote the program and its
+  proofs under rules that the author set.
+type: software
+authors:
+  - family-names: Dablander
+    given-names: Markus
+license: Apache-2.0
+repository-code: "https://github.com/MarkusFerdinandDablander/VeriMol"
+keywords:
+  - Lean 4
+  - formal verification
+  - vericoding
+  - AI safety
+  - cheminformatics
+  - SMILES
+  - molecular graph
+version: 0.1.0
+date-released: 2026-11-27

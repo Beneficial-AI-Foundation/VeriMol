@@ -1,0 +1,10 @@
+# The Python packages of the reference tools, with exact versions.
+# reference/README.md, "Setting it up", says how to install them.
+
+# RDKit, the reference reader named in SPEC.md. Licence: BSD 3-Clause
+rdkit==2024.3.3
+# Open Babel 3.1.1 (an unofficial build), a second and independent reader of
+# SMILES. Licence: GNU GPL version 2
+openbabel-wheel==3.1.1.23
+# A strict SMILES reader, asked only whether a text is grammatical. Licence: MIT
+partialsmiles==2.0

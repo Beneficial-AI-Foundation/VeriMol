@@ -1,0 +1,19 @@
+# Everything Lake builds (compiled files and the executables) goes here.
+# It is recreated by "lake build", so it does not belong in Git.
+.lake/
+
+# The Python environment of the reference tools (see reference/README.md).
+# It is recreated from reference/requirements.txt.
+.venv/
+__pycache__/
+
+# Files fetched from the internet by reference/fetch.py. They are recreated and
+# checked against the checksums recorded in reference/sources.py.
+reference/downloads/
+
+# Experiments: trial programs and trial proofs. They stay local and are never
+# committed.
+scratch/
+
+# Local settings of the AI coding tool. They are no part of the project.
+.claude/
