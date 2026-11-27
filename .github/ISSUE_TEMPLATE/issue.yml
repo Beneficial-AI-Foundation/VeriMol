@@ -1,0 +1,14 @@
+name: Issue
+description: A question, a correction, a mistake in the documents, a proof that does not go through, build trouble.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you post.** Please include no structures of compounds chosen for their hazard, no routes for making anything, and no lists of such structures ([RISKS.md](https://github.com/Beneficial-AI-Foundation/VeriMol/blob/main/RISKS.md)). A way past a filter, or a hole in the audit, goes to the private channel of [SECURITY.md](https://github.com/Beneficial-AI-Foundation/VeriMol/blob/main/SECURITY.md) and not here.
+  - type: textarea
+    id: body
+    attributes:
+      label: What happened, or what is your question?
+      description: For a problem with the program, give the SMILES, the command you ran, what you expected and what happened.
+    validations:
+      required: true

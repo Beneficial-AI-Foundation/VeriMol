@@ -1,8 +1,13 @@
 # VeriMol
 
-![Overview in four stages, from left to right: a chemical compound, from the real world or from a deep generative chemistry model; its machine-readable formats in cheminformatics, among them SMILES; the Lean 4 Mol object that VeriMol reads from the SMILES; and a vericoded, formally verified safety filter based on a safety rule proposed and formalised by a chemist. After the chemist states the rule, an AI writes the algorithmic checker and its proof that it truly checks the rule, and Lean checks the proof. The example rule built so far is "no long perfluorinated group". It is shown on the formula of PFOA (perfluorooctanoic acid): seven of its eight carbon atoms carry fluorine and no hydrogen and are bonded in one chain, and together they form a perfluorinated group of seven, which counts as long. Compounds with perfluorinated groups are PFAS (per- and polyfluoroalkyl substances), known as "forever chemicals" because they hardly break down; PFOA is a long-chain PFAS. A proposed compound is asked three questions (is it read into Lean as a Mol object, is the Mol sound, does the rule hold) before it is handed on to the lab, with the theorem that says so and two compounds: ibuprofen is handed on, and PFOA is refused. Under it stands the foundation: three statements that are proven about the reader and the writer.](figures/verimol-overview.svg)
+> **Early research prototype, version 0.1.0.** One example filter with one
+> example rule. Under no circumstances should it be relied upon to check
+> safety-relevant features of chemical compounds.
+> [`RISKS.md`](RISKS.md) says what is asked of users.
 
-**Formally verified safety filters for AI-generated molecules.** Generative
+![Overview in four stages, from left to right: a chemical compound, from the real world or from a deep generative chemistry model; its machine-readable formats in cheminformatics, among them SMILES; the Lean 4 Mol object that VeriMol reads from the SMILES; and a vericoded, formally verified safety filter based on a safety rule proposed and formalised by a chemist. After the chemist states the rule, an AI writes the algorithmic checker and its proof that it truly checks the rule, and Lean checks the proof. The example rule built so far is "no long perfluorinated group". It is shown on the formula of PFOA (perfluorooctanoic acid): seven of its eight carbon atoms carry fluorine and no hydrogen and are bonded in one chain, and together they form a perfluorinated group of seven, which counts as long. Compounds with perfluorinated groups are PFAS (per- and polyfluoroalkyl substances), known as "forever chemicals" because they hardly break down; PFOA is a long-chain PFAS. A proposed compound is asked three questions (is it read into Lean as a Mol object, is the Mol sound, does the rule hold) before it is handed on to the lab, with the theorem that says so and two compounds: ibuprofen is handed on, and PFOA is refused. Under it stands the foundation: three statements that are proven about the reader and the writer. The figure shows the aim; what is built is one example filter with one example rule, in an early research prototype.](figures/verimol-overview.svg)
+
+**Towards formally verified safety filters for AI-generated molecules.** Generative
 chemistry models can propose new and potentially hazardous molecules that could be
 (intentionally or unintentionally) misused. Before a proposed molecule is made in a lab,
 a filter should check it against safety rules, and the filter should be formally proven to
@@ -65,7 +70,8 @@ stand behind that step.
    toxic", cannot be one.
 
    One example rule that is already built: the molecule has no
-   perfluorinated group of six or more carbon atoms. Such groups are associated
+   perfluorinated group of `n` or more carbon atoms, for a number `n` that is
+   given with the command. Such groups are associated
    with so-called "forever chemicals", because they hardly break down
    (["The example"](#the-example-filter-no-long-perfluorinated-group) says more). Kinds of rules that could
    follow, none of them built:
@@ -77,6 +83,15 @@ stand behind that step.
    - no compound on a list can be reached from it in at most *k* steps of a
      fixed list of transformations, so that a thin disguise of a listed
      compound does not pass.
+
+   Three of those four work from a list, and a list of structures chosen
+   because they are dangerous is not a thing to publish: read in one
+   direction it is a filter, read in the other it is a map of what to try.
+   The intended answer is to keep the list out of the program. The checker is
+   public and proven for *every* list — a theorem of that shape carries no
+   hazardous content — and the list itself is an input, supplied by whoever
+   answers for it. [`RISKS.md`](RISKS.md) sets this out, and says what else
+   does and does not belong in this repository.
 
 2. **An AI writes the checker and its proof.** The checker is a program that
    answers yes or no for a suitable, valid `Mol`. The proof shows that it says yes exactly
@@ -129,6 +144,12 @@ filter lets through, so it can come to exploit a bug in the filter that
 tests would rarely meet. (The same holds for whatever the rule itself lets
 through: a proof removes the mistakes of the program, not the limits of the
 rule.)
+
+That argument is about what a filter should be, and not a description of what
+has been done here. Nobody has yet gone looking for compounds that are as
+harmful as the ones this rule is meant to catch and that slip past it. The
+known ways past it were found by reading the rule, not by searching for them
+([`SPEC.md`](SPEC.md), section 16).
 
 ## Try it
 
@@ -278,10 +299,17 @@ reader and the two proven checkers.
 | an isomer of PFOA whose branch point carries no fluorine | sound; exactly 7: the atom at the branch is a branch carbon atom |
 | ibuprofen | sound; no perfluorinated group at all |
 
+Each is about one text. The same compound written another way — with
+charges, or with a hydrogen as an atom of its own — is another `Mol`, and
+nothing is proven about it.
+
 These six theorems are proven, but they are not among the 97 statements
 below, whose wording the project guards against an unnoticed change
 ([`CLAIMS.md`](CLAIMS.md), "Known compounds"). The filter was also compared
-with RDKit ([`CLAIMS.md`](CLAIMS.md), under "Tested", has the numbers).
+with RDKit, which was asked for the same pattern written a second time: that
+holds two searches against each other, and says nothing about whether the
+rule is the right one ([`CLAIMS.md`](CLAIMS.md), under "Tested", has the
+numbers).
 
 **What the filter does not say.**
 
@@ -290,7 +318,13 @@ with RDKit ([`CLAIMS.md`](CLAIMS.md), under "Tested", has the numbers).
   groups of six or more carbon atoms are refused (`filter perfluoro 6`),
   PFHxA does, because its largest group has five.
 - **That the rule is the right one.** It is a reading, and not the rule of a
-  law or of a standard. An oxygen atom between two groups parts them, so a
+  law or of a standard, and no number `n` would make it one: the usual
+  wording for long-chain PFAS sets one threshold for sulfonates and another
+  for carboxylic acids, where the rule has a single number for every
+  compound. With 7 the filter hands on perfluorohexanesulfonic acid, which
+  that wording counts as long-chain, and with 6 it refuses
+  perfluoroheptanoic acid, which that wording does not.
+  An oxygen atom between two groups parts them, so a
   perfluoroether acid can pass however many fluorinated carbon atoms it
   has. One fluorine atom on a carbon atom without hydrogen is enough, also
   where nothing is perfluorinated. And chlorine, bromine and iodine on a
@@ -302,7 +336,11 @@ with RDKit ([`CLAIMS.md`](CLAIMS.md), under "Tested", has the numbers).
   has the examples and the full list.
 - **That "sound" is the right test.** It is narrow on purpose: of the
   62,075 real SMILES that the program reads, the filter refuses 9,542 as
-  not sound, most of them for a charge.
+  not sound, most of them for a charge. With the number 6 the proven rule
+  refuses 34. So almost every refusal comes from "sound", the part that is
+  called a placeholder above, and not from the part that is proven. A
+  filter whose work is done by its weakest test is not a filter to rely on,
+  which is the point of the warning at the top.
 - **What is made of the `Mol` afterwards, and how it is read by a human.**
   A printed `Mol` that passed looks like any other printed `Mol`:
   only the exit code says that it passed.
@@ -543,6 +581,9 @@ say, and every check with its numbers.
 |---|---|
 | [`SPEC.md`](SPEC.md) | what the program does and does not do, exactly |
 | [`CLAIMS.md`](CLAIMS.md) | what is proven, what is tested and what is trusted, in full |
+| [`RISKS.md`](RISKS.md) | the risks of the project and of filters in general, the line of its scope, what is asked of contributors and users, and what to watch for when wiring the filter into something |
+| [`SECURITY.md`](SECURITY.md) | how to report a way past a filter, or a hole in the audit, privately |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | the two things to know before opening an issue or a pull request, and what `lake test` must say |
 | [`reference/README.md`](reference/README.md) | what the program is checked against, and how to run those checks (they need Python; the Lean program does not) |
 
 These three documents call a SMILES a *text*: they also have to speak of
@@ -647,4 +688,11 @@ at your option, be used under the MIT License instead
 
 To cite the project, use [`CITATION.cff`](CITATION.cff), or "Cite this
 repository" on the GitHub page. Questions, corrections and reports of
-mistakes are welcome as issues on GitHub.
+mistakes are welcome as issues on GitHub — with one exception: a way past a
+filter, or a hole in the audit, goes to the private channel of
+[`SECURITY.md`](SECURITY.md) first. [`CONTRIBUTING.md`](CONTRIBUTING.md) is
+the short version of what to know before opening either an issue or a pull
+request. Before citing the project anywhere,
+please read ["What is asked of users"](RISKS.md#what-is-asked-of-users) in
+[`RISKS.md`](RISKS.md): this is a prototype, and it must not be cited as
+assurance that anything has been screened.

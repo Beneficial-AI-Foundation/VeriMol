@@ -1,0 +1,16 @@
+# Who owns which files. GitHub reads this file by itself.
+#
+# The pattern * matches every file in the repository, so the author owns all
+# of it. Together with the rule "Require review from Code Owners" on the
+# branch main, this means that a pull request cannot be merged until
+# @MarkusFerdinandDablander has approved it. An approval by anybody else does
+# not satisfy the rule.
+#
+# Without this file, "require 1 approval" would accept an approval from any
+# person with write access to the repository, which is not what is wanted
+# here.
+#
+# A later line wins over an earlier one. There is deliberately no more
+# specific line below: every path is owned by the same person.
+
+* @MarkusFerdinandDablander

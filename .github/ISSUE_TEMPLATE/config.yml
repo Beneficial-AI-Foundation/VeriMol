@@ -1,0 +1,29 @@
+# Shown above the "New issue" buttons. Ordinary issues stay open and easy:
+# the links are for the kinds of report that should not be posted in public
+# first. See CONTRIBUTING.md and RISKS.md.
+#
+# blank_issues_enabled: false, so that every issue goes through issue.yml and
+# its "Before you post" line is read. A blank issue would be a way around the
+# one warning that is hard to undo once it has been ignored: GitHub keeps the
+# edit history of an issue, so text that crosses the line cannot be taken
+# back by editing it out.
+blank_issues_enabled: false
+contact_links:
+  - name: A way past a filter, or a hole in the audit
+    url: https://github.com/Beneficial-AI-Foundation/VeriMol/security/advisories/new
+    about: >-
+      Report it privately instead of here. A molecule a filter hands on although
+      its rule should refuse it, or a way past Audit.lean, goes through the
+      private channel first. SECURITY.md says what to include.
+  - name: Anything hazardous, or anything you would rather not post
+    url: https://github.com/Beneficial-AI-Foundation/VeriMol/blob/main/RISKS.md
+    about: >-
+      Structures of compounds chosen because they are dangerous, routes for
+      making anything, and lists of that kind do not belong in an issue. An
+      edit does not remove them: GitHub keeps the edit history. Read RISKS.md,
+      then use the private channel in SECURITY.md.
+  - name: Before citing this project anywhere
+    url: https://github.com/Beneficial-AI-Foundation/VeriMol/blob/main/RISKS.md#what-is-asked-of-users
+    about: >-
+      Version 0.1.0, one rule, written in a two-week sprint. It must not be
+      cited as assurance that anything has been screened.

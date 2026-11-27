@@ -454,7 +454,8 @@ Not proven:
 
 The command `filter` reads a SMILES text and hands the `Mol` on only if the
 `Mol` is sound and a rule holds for it (section 16). Whatever passes is
-proven to satisfy the rule. The filter is made of four pieces:
+proven to satisfy the rule, and nothing beyond the rule. The filter is made
+of four pieces:
 
 1. **Sound.** One definition of which `Mol`s a rule may be asked about
    (`Mol.Sound`, section 16.2).

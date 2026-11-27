@@ -249,4 +249,5 @@
 <circle cx="1055" cy="669.5" r="8.5" fill="#2456C8"/>
 <path d="M1050.4 669.9 l3.2 3.3 l6 -6.8" fill="none" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="1071" y="674" class="sans" font-size="13.5" fill="#566074">every proof checked by Lean’s kernel</text>
+<text x="1030" y="674" text-anchor="end" class="sans" font-size="13.5" font-weight="700" fill="#B45309">version 0.1.0 — prototype, not for real use</text>
 </svg>

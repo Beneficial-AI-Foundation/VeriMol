@@ -1,0 +1,132 @@
+# Builds the project, runs the audit, runs the tests, and then checks two of
+# the project's own claims with tools that the project did not write. Runs on
+# every push to main and on every pull request.
+#
+# Why this exists. The audit (Audit.lean) is what stands behind every claim in
+# CLAIMS.md: no missing proof, no added axiom, no input or output in Core, no
+# changed theorem statement. Lake runs it as part of "lake build" and "lake
+# test", so it runs on the author's machine. Without this file it runs nowhere
+# else, and a pull request could weaken it without anything saying so. Here it
+# runs on a clean machine, on code nobody has built before, and the result is
+# visible on the pull request.
+#
+# Two of the settings below answer a line of README.md, under "Trusted": the
+# project's own checking tools are trusted, "and nothing checks them". The
+# project already runs leanchecker from Tests.lean and already checks the
+# axioms from Audit.lean, and both pass. The point of asking for them here as
+# well is that these two runs are outside the project's own files: a change to
+# Tests.lean or to Audit.lean cannot switch them off, and a pull request that
+# weakened either would still have to get past them.
+
+name: build, audit and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Lets the workflow be started by hand from the Actions tab.
+  workflow_dispatch:
+
+# Least privilege: the workflow only reads the repository. It needs nothing
+# else, and a token that can write is a token that a bad step could use.
+permissions:
+  contents: read
+
+# A new push to the same branch cancels the run that is still going.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # The project is developed and tested on Linux. Two of the tests start the
+    # program through a Unix shell, and one needs the device /dev/full, which
+    # this runner has.
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # Both actions below are named by the full hash of a commit, and not by
+      # a tag such as "v4". Whoever holds the repository of an action can move
+      # a tag to other code; a hash cannot be moved. This workflow is here to
+      # check the project from outside, so what it runs must not change unseen
+      # either. To take a newer version: put in its hash, and name the version
+      # in the comment behind it.
+      - name: Check out the repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      # Installs elan, which fetches the exact Lean version that lean-toolchain
+      # names, then builds, runs the audit and runs the tests.
+      #
+      #   build-args: Audit     "lake build Audit" first, so the audit's report
+      #                         stands in the log as its own step.
+      #   test: true            "lake test" must run, and the run fails if it
+      #                         cannot. lake test builds what it needs, runs the
+      #                         audit, and starts the tests only if it passed.
+      #   lint: false           there is no lint target: the project has no
+      #                         dependencies and no linter of its own.
+      #   use-mathlib-cache     the project uses no Mathlib (rule 2), so there
+      #                         is no cache to fetch.
+      #
+      #   leanchecker: true     replays every declaration through Lean's kernel
+      #                         again. Tests.lean asks for this too ("leanchecker
+      #                         accepts every declaration of Core and Proofs");
+      #                         this run is not under Tests.lean's control.
+      #
+      #   axiom-audit           checks, with a tool of the Lean community, that
+      #                         nothing rests on an axiom beyond the three that
+      #                         README.md names. Audit.lean checks this too;
+      #                         this run is not under Audit.lean's control.
+      #
+      # Both of these runs must be told what to look at, and "VeriMol" is the
+      # answer for both: VeriMol.lean, and with it every file of Core and of
+      # Proofs. Left to themselves, neither would check the theorems.
+      #
+      #   leanchecker-args      without it, leanchecker looks for a library
+      #                         with the name of the package, "verimol". There
+      #                         is none, and the step fails ("Could not find
+      #                         any oleans for: Verimol").
+      #
+      #   axiom-audit-root      without it, the tool takes the first library
+      #                         of lakefile.toml, which is VeriMol.Core. It
+      #                         would then read the files of Core only, report
+      #                         that all is well, and never open a file of
+      #                         Proofs, where the theorems are: a green tick
+      #                         that says nothing about them. Audit.lean,
+      #                         Tests.lean and the other files outside VeriMol/
+      #                         are left out on purpose: Audit.lean holds an
+      #                         axiom and a `sorry` as specimens for its own
+      #                         self-test.
+      #
+      # A theorem that is stated and not yet proven holds `sorry`, which rule
+      # 9 allows where the ledger lists it as open. This run does not know the
+      # ledger: it fails for any `sorry` under VeriMol/. Today no theorem is
+      # open. When one is, the choice is made here, in the open: either this
+      # run stays red until the proof is there, or `sorryAx` is added to the
+      # list below, with a comment that names the theorem.
+      - name: Install Lean, build, audit, test and check independently
+        uses: leanprover/lean-action@ba3fdfe5c4476c925da13bf11a005ddb47e47aee # v1.7.1
+        with:
+          # Quoted on purpose: the action compares these against the texts
+          # "true", "false" and "default", and YAML would otherwise hand it
+          # booleans.
+          build-args: "Audit"
+          test: "true"
+          lint: "false"
+          use-mathlib-cache: "false"
+          leanchecker: "true"
+          leanchecker-args: "VeriMol"
+          axiom-audit: "true"
+          axiom-audit-root: "VeriMol"
+          axiom-audit-allow: "propext,Classical.choice,Quot.sound"
+
+      # The build must not change a file that is in Git. If it does, something
+      # generated is committed, or a step wrote where it should not.
+      - name: Check that the build left the working tree clean
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "The build changed files that are in Git:"
+            git status --porcelain
+            git diff
+            exit 1
+          fi
