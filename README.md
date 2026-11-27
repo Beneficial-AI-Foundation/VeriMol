@@ -140,7 +140,7 @@ one of them needs the device `/dev/full` and is left out where there is
 none. The first `lake test` builds everything and takes a few minutes.
 
 ```
-git clone https://github.com/MarkusFerdinandDablander/VeriMol.git
+git clone https://github.com/Beneficial-AI-Foundation/VeriMol.git
 cd VeriMol
 lake test                                           # builds everything, checks every proof, runs every test
 .lake/build/bin/app 'CC(=O)O'                       # reads acetic acid and prints its Mol

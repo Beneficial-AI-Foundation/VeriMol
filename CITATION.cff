@@ -16,7 +16,7 @@ authors:
   - family-names: Dablander
     given-names: Markus
 license: Apache-2.0
-repository-code: "https://github.com/MarkusFerdinandDablander/VeriMol"
+repository-code: "https://github.com/Beneficial-AI-Foundation/VeriMol"
 keywords:
   - Lean 4
   - formal verification

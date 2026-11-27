@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="icon-title icon-desc">
+<title id="icon-title">VeriMol</title>
+<desc id="icon-desc">A molecule drawn as a ring of six atoms joined by bonds, one atom of another element, with a check mark inside the ring: a molecular graph that has passed a proven check.</desc>
+<defs>
+<linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D2845"/><stop offset="1" stop-color="#111726"/></linearGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="url(#tile)"/>
+<path d="M256 88 L401.5 172 L401.5 340 L256 424 L110.5 340 L110.5 172 Z" fill="none" stroke="#8FB4FF" stroke-width="18" stroke-linejoin="round"/>
+<circle cx="256" cy="88" r="30" fill="#8FB4FF"/>
+<circle cx="401.5" cy="340" r="30" fill="#8FB4FF"/>
+<circle cx="256" cy="424" r="30" fill="#8FB4FF"/>
+<circle cx="110.5" cy="340" r="30" fill="#8FB4FF"/>
+<circle cx="110.5" cy="172" r="30" fill="#8FB4FF"/>
+<circle cx="401.5" cy="172" r="30" fill="#FFC978"/>
+<path d="M184 262 L236 314 L334 204" fill="none" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
