@@ -67,6 +67,15 @@ jobs:
       #                         dependencies and no linter of its own.
       #   use-mathlib-cache     the project uses no Mathlib (rule 2), so there
       #                         is no cache to fetch.
+      #   use-github-cache      false: every run builds everything anew. Left
+      #                         on, which is the default, the action fetches
+      #                         the compiled files of an earlier run, and Lake
+      #                         builds only what it takes for changed. The
+      #                         audit would then not run again where Lake sees
+      #                         no change, and this would be no run "on code
+      #                         nobody has built before", as the top of this
+      #                         file says. A run takes about two minutes
+      #                         longer for it.
       #
       #   leanchecker: true     replays every declaration through Lean's kernel
       #                         again. Tests.lean asks for this too ("leanchecker
@@ -114,6 +123,7 @@ jobs:
           test: "true"
           lint: "false"
           use-mathlib-cache: "false"
+          use-github-cache: "false"
           leanchecker: "true"
           leanchecker-args: "VeriMol"
           axiom-audit: "true"
